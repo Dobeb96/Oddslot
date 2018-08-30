@@ -2,7 +2,7 @@ require 'watir'
 
 class GameResultsManager
   def initialize
-    @results, @results_percentage = {}, {}
+    @results, @results_percentage, @results_odds = {}, {}, {}
     open_and_prepare_window
     get_results_from_table
   end
@@ -17,7 +17,7 @@ class GameResultsManager
   end
 
   def get_results_from_table
-    if ARGV[0].to_i != 0 then pages = ARGV[0].to_i else pages = 7 end
+    if ARGV[0].to_i != 0 then pages = ARGV[0].to_i else pages = 80 end
     read_row_data(pages)
     print_results
   end
@@ -27,11 +27,13 @@ class GameResultsManager
       print 'Strona' + i.to_s + ': '
       @browser.elements(:css => '.team-schedule--full tbody tr').each do |row|
         league_name = row.elements(:css => 'td')[3].text_content
+        odds = row.elements(:css => 'td')[5].text_content
         percentage = row.elements(:css => 'td')[4].text_content
         print '.'
         if row.elements(:css => 'td')[7].element(:css => 'a font').exists?
           if row.elements(:css => 'td')[7].element(:css => 'a font').attribute_value('color') == 'green' then won = true else won = false end
           add_result(league_name, won)
+          add_result_odds(odds, won)
           add_result_percentage(percentage, won)
         end
       end
@@ -53,6 +55,10 @@ class GameResultsManager
     add_result_helper(@results, league_name, won)
   end
 
+  def add_result_odds(odds, won)
+    add_result_helper(@results_odds, odds, won)
+  end
+
   def add_result_percentage(percentage, won)
     add_result_helper(@results_percentage, percentage, won)
   end
@@ -71,6 +77,11 @@ class GameResultsManager
     @results.sort.each do |league_name, results|
       percentage = (results[0].to_f / results[1].to_f * 100.0).to_i
       puts percentage.to_s + "%\t" + results[0].to_s + '/' + results[1].to_s + "\t" + league_name if percentage > 70 && results[1] > 1
+    end
+    puts ''
+    @results_odds.sort.each do |odd, results|
+      percentage = (results[0].to_f / results[1].to_f * 100.0).to_i
+      puts percentage.to_s + "%\t" + results[0].to_s + '/' + results[1].to_s + "\t" + odd
     end
     puts ''
     @results_percentage.sort.each do |percent, results|
