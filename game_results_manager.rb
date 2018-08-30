@@ -6,7 +6,6 @@ class GameResultsManager
     @stats = [[], [], []] # [[league_name], [percentage], [odd]]
     open_and_prepare_window
     get_results_from_table
-    @stats = [['Europe: Europa League - Qualification'], [95], [1.12]]
     get_profitable_bets
   end
 
@@ -33,12 +32,12 @@ class GameResultsManager
 
   def read_row_data(to)
     1.upto(to) do |i|
-      print 'Strona' + i.to_s + ': '
+      print 'Strona' + i.to_s + ': ' if to > NUMBER_OF_PAGES
       @browser.elements(:css => '.team-schedule--full tbody tr').each do |row|
         league_name = row.elements(:css => 'td')[3].text_content
         percentage = row.elements(:css => 'td')[4].text_content
         odds = row.elements(:css => 'td')[5].text_content
-        print '.'
+        print '.' if to > NUMBER_OF_PAGES
         if row.elements(:css => 'td')[7].element(:css => 'a font').exists?
           if row.elements(:css => 'td')[7].element(:css => 'a font').attribute_value('color') == 'green' then won = true else won = false end
           add_result(league_name, won)
@@ -58,7 +57,11 @@ class GameResultsManager
         end
       end
       puts ''
-      go_to_next_page if i != to
+      if i != to
+        go_to_next_page
+      else
+        puts ''
+      end
     end
   end
 
