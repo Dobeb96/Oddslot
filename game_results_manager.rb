@@ -74,18 +74,23 @@ class GameResultsManager
   end
 
   def print_results
+    puts "PERC\tTRIES\tLEAGUE"
     @results.sort.each do |league_name, results|
-      percentage = (results[0].to_f / results[1].to_f * 100.0).to_i
+      percentage = (results[0].to_f / results[1].to_f * 100).to_i
       puts percentage.to_s + "%\t" + results[0].to_s + '/' + results[1].to_s + "\t" + league_name if percentage > 70 && results[1] > 1
     end
     puts ''
+    puts "PERC\tTRIES\tODDS (PROFIT LINE)"
     @results_odds.sort.each do |odd, results|
-      percentage = (results[0].to_f / results[1].to_f * 100.0).to_i
-      puts percentage.to_s + "%\t" + results[0].to_s + '/' + results[1].to_s + "\t" + odd
+      fraction = results[0].to_f / results[1].to_f
+      profitable_odds = (1 / fraction).round(2)
+      percentage = (fraction * 100).to_i
+      puts percentage.to_s + "%\t" + results[0].to_s + '/' + results[1].to_s + "\t" + odd + " (#{profitable_odds})" if odd.to_f > profitable_odds
     end
     puts ''
+    puts "PERC\tTRIES\tODDSLOT_PERC"
     @results_percentage.sort.each do |percent, results|
-      percentage = (results[0].to_f / results[1].to_f * 100.0).to_i
+      percentage = (results[0].to_f / results[1].to_f * 100).to_i
       puts percentage.to_s + "%\t" + results[0].to_s + '/' + results[1].to_s + "\t" + percent
     end
   end
