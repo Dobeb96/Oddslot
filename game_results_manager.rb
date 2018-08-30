@@ -19,7 +19,7 @@ class GameResultsManager
   end
 
   def get_results_from_table
-    if ARGV[0].to_i != 0 then pages = ARGV[0].to_i else pages = 70 end
+    if ARGV[0].to_i != 0 then pages = ARGV[0].to_i else pages = 80 end
     read_row_data(pages)
     print_results
   end
@@ -56,7 +56,7 @@ class GameResultsManager
           end
         end
       end
-      puts ''
+      puts '' if to > NUMBER_OF_PAGES
       if i != to
         go_to_next_page
       else
