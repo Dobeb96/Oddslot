@@ -12,7 +12,7 @@ class GameResultsManager
   private
   def open_and_prepare_window
     @browser = Watir::Browser.new
-    @browser.window.resize_to 1920, 1080
+    #@browser.window.resize_to 1920, 1080
     @browser.window.move_to 0, 0
     @browser.goto('https://oddslot.com/tips/')
     @browser.element(:css => '.team-schedule--full').wait_until_present
@@ -24,7 +24,7 @@ class GameResultsManager
     print_results
   end
 
-  NUMBER_OF_PAGES = 5
+  NUMBER_OF_PAGES = 6
   def get_profitable_bets
     go_to_first_page
     read_row_data(NUMBER_OF_PAGES)
@@ -49,7 +49,8 @@ class GameResultsManager
             @stats[2].include?(row.elements(:css => 'td')[5].text_content.to_f)
             puts 'Found a sure bet!: ' +
               row.elements(:css => 'td')[1].text_content + ' vs ' +
-              row.elements(:css => 'td')[2].text_content + ', ' +
+              row.elements(:css => 'td')[2].text_content + ' ' +
+	      row.elements(:css => 'td')[6].text_content + ', ' +
               row.elements(:css => 'td')[3].text_content
           else
             puts 'Bet not profitable'
@@ -117,7 +118,7 @@ class GameResultsManager
       percentage = (fraction * 100).to_i
       if odd.to_f > profitable_odds
         puts percentage.to_s + "%\t" + results[0].to_s + '/' + results[1].to_s + "\t" + odd + " (#{profitable_odds})"
-        @stats[1].push(odd.to_f)
+        @stats[2].push(odd.to_f)
       end
     end
     puts ''
@@ -125,7 +126,7 @@ class GameResultsManager
     @results_percentage.sort.each do |percent, results|
       percentage = (results[0].to_f / results[1].to_f * 100).to_i
       puts percentage.to_s + "%\t" + results[0].to_s + '/' + results[1].to_s + "\t" + percent
-      @stats[2].push(percent.to_f) if percentage > percent.to_i - 10 && results[1] > 4
+      @stats[1].push(percent.to_f) if percentage > percent.to_i - 10 && results[1] > 2
     end
   end
 end
